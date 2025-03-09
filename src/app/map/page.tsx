@@ -7,7 +7,7 @@ import MapComponent from "@/components/Map";
 import Loader from "@/components/Loader"; // Ensure you have a Loader component
 
 export default function MapPage() {
-  const { data: session, status } = useSession();
+  const {  status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
