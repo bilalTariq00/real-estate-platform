@@ -1,22 +1,27 @@
 import GoogleProvider from "next-auth/providers/google";
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 
-export const handler = NextAuth({
+// Define authentication options
+const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET, // Required for JWT signing
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: "/", // If user needs to sign in, redirect them to home
+    signIn: "/", // Redirect to home if user is not logged in
   },
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      return `${baseUrl}/map`; // Automatically redirect all logins to "/map"
+    async redirect({ baseUrl }) {
+      return `${baseUrl}/map`; // Automatically redirect after login
     },
   },
-});
+};
 
-export { handler as GET, handler as POST };
+// Create the NextAuth handler
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST }; // Correct API route export
+export { authOptions }; // Export for use in getServerSession()
