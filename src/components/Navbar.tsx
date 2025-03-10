@@ -2,6 +2,7 @@
 
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Session } from "next-auth";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
@@ -10,19 +11,23 @@ export default function Navbar() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [prevSession, setPrevSession] = useState(session); // Track previous session state
+  const [prevSession, setPrevSession] = useState<Session | null | undefined>(
+    undefined
+  ); // ✅ Proper type definition
 
-  // ✅ Show toast AFTER authentication state updates
   useEffect(() => {
-    if (prevSession !== session) {
-      if (session) {
-        toast.success("Signed in successfully!"); // 🎉 Trigger only when session exists
-      } else if (prevSession && !session) {
-        toast.success("Signed out successfully!"); // ✅ Show toast when user logs out
-      }
+    if (prevSession === undefined) {
       setPrevSession(session);
+      return;
     }
-  }, [session, prevSession]); // ✅ Depend on `session`
+
+    if (!prevSession && session) {
+      toast.success("Signed in successfully! 🎉");
+    } else if (prevSession && !session) {
+      toast.success("Signed out successfully! 👋");
+    }
+    setPrevSession(session); // ✅ Ensure proper session state tracking
+  }, [session]);
 
   const handleSignIn = async () => {
     setLoading(true);
@@ -38,8 +43,8 @@ export default function Navbar() {
   const handleSignOut = async () => {
     setLoading(true);
     try {
-      await signOut();
-      router.replace("/"); // ✅ Redirect to home AFTER sign-out
+      await signOut({ redirect: false }); // ✅ Prevents full page reload
+      router.replace("/"); // ✅ Redirect AFTER sign-out
     } catch {
       toast.error("Sign out failed.");
     } finally {
@@ -69,6 +74,7 @@ export default function Navbar() {
             whileTap={{ scale: 0.95 }}
             onClick={handleSignOut}
             className="bg-[#723B80] hover:bg-[#44257A] px-4 py-2 rounded-md transition text-sm md:text-base flex items-center justify-center gap-2"
+            disabled={loading}
           >
             {loading ? (
               <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
