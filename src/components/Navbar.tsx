@@ -1,8 +1,7 @@
 "use client";
 
 import { useSession, signIn, signOut } from "next-auth/react";
-import { Session } from "next-auth"; // ✅ Import the Session type
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
@@ -10,26 +9,23 @@ import { toast } from "react-hot-toast";
 export default function Navbar() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
   const [loading, setLoading] = useState(false);
-  const [prevSession, setPrevSession] = useState<Session | null>(null); // ✅ Properly typed session tracking
 
-  // ✅ Show toast AFTER authentication state updates
+  // ✅ Show toast when user lands on specific pages
   useEffect(() => {
-    if (prevSession === undefined) return; // Skip first render
-
-    if (!prevSession && session) {
-      toast.success("Signed in successfully!"); // 🎉 Trigger when user logs in
-    } else if (prevSession && !session) {
-      toast.success("Signed out successfully!"); // ✅ Show toast when user logs out
+    if (pathname === "/map" && session) {
+      toast.success("Signed in successfully!"); // 🎉 When reaching /map, show sign-in toast
+    } else if (pathname === "/" && !session) {
+      toast.success("Signed out successfully!"); // ✅ When reaching /, show sign-out toast
     }
-    
-    setPrevSession(session); // ✅ Update previous session state
-  }, [session]); // ✅ Depend on `session` to track changes
+  }, [pathname, session]); // ✅ Depend on `pathname` and `session` state
 
   const handleSignIn = async () => {
     setLoading(true);
     try {
       await signIn("google");
+      router.push("/map"); // ✅ Redirect user to /map after sign-in
     } catch {
       toast.error("Sign in failed. Try again.");
     } finally {
@@ -41,7 +37,7 @@ export default function Navbar() {
     setLoading(true);
     try {
       await signOut();
-      router.replace("/"); // ✅ Redirect to home AFTER sign-out
+      router.replace("/"); // ✅ Redirect user to / after sign-out
     } catch {
       toast.error("Sign out failed.");
     } finally {
