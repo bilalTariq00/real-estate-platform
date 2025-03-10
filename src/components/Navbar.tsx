@@ -12,21 +12,25 @@ export default function Navbar() {
   const [loading, setLoading] = useState(false);
 
   const handleSignIn = async () => {
-    setLoading(true);
-    try {
-      const result = await signIn("google", { redirect: false }); // Prevent automatic redirection
-      if (result?.ok) {
-        toast.success("Signed in successfully!"); // ✅ Show toast on actual login success
-        router.push("/map");
-      } else {
-        toast.error("Sign in failed. Try again.");
-      }
-    } catch {
-      toast.error("Sign in failed.");
-    } finally {
-      setLoading(false);
+  setLoading(true);
+  try {
+    const result = await signIn("google", { redirect: false });
+    
+    console.log("SignIn Result:", result); // 🛠 Debugging
+
+    if (result?.error) {
+      throw new Error(result.error);
     }
-  };
+
+    toast.success("Signed in successfully!");
+    router.push("/map");
+  } catch (error) {
+    console.error("Sign in error:", error); // 🛠 Log error
+    toast.error("Sign in failed. Try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleSignOut = async () => {
     setLoading(true);
