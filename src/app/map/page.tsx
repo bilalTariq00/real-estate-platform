@@ -1,26 +1,32 @@
-"use client";
+"use client"; // ✅ Ensure this page only runs in the browser
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import MapComponent from "@/components/Map";
-import Loader from "@/components/Loader"; // Ensure you have a Loader component
+import { useEffect, useState, Suspense } from "react";
+import dynamic from "next/dynamic";
+import Loader from "@/components/Loader"; // ✅ Ensure this is a simple client component
+
+// ✅ Dynamically import `MapComponent` to prevent SSR issues
+const MapComponent = dynamic(() => import("@/components/Map"), { 
+  ssr: false, 
+  loading: () => <Loader /> // ✅ Show Loader while loading Map
+});
 
 export default function MapPage() {
-  const {  status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.replace("/"); // Redirect if not logged in
+      router.replace("/"); // 🚀 Redirect if not logged in
     } else if (status === "authenticated") {
-      setLoading(false); // Show content only when authenticated
+      setLoading(false); // ✅ Ensure only authenticated users see the map
     }
   }, [status, router]);
 
   if (status === "loading" || loading) {
-    return <Loader />; // Show loader while checking authentication
+    return <Loader />; // ✅ Show Loader while checking authentication
   }
 
   return (
@@ -28,7 +34,9 @@ export default function MapPage() {
       <h1 className="text-3xl font-bold mb-4 text-purple-100">Real Estate Map</h1>
       <p className="text-lg text-white">Explore available properties on the map.</p>
       <div className="w-full h-[500px] mt-6">
-        <MapComponent />
+        <Suspense fallback={<Loader />}>
+          <MapComponent />
+        </Suspense>
       </div>
     </div>
   );

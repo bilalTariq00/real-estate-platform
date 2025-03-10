@@ -1,10 +1,14 @@
 "use client";
+import dynamic from "next/dynamic";
+
+// ✅ Dynamically import Lottie to avoid SSR issues
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 import { motion } from "framer-motion";
-import Lottie from "lottie-react";
 import handTapping from '../../public/handTapping.json'
 
 export default function Loader() {
+  if (typeof window === "undefined") return null; // ✅ Prevent SSR issues
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
       <motion.div

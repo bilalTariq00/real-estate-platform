@@ -17,7 +17,8 @@ export async function GET(req: NextRequest) {
 
     const properties = await Property.find(query);
     return NextResponse.json(properties, { status: 200 });
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error("GET /api/properties error:", error); // ✅ Log the error
     return NextResponse.json(
       { error: "Failed to fetch properties" },
       { status: 500 }
@@ -44,7 +45,8 @@ export async function POST(req: NextRequest) {
       { message: "Property added successfully", property: newProperty },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: unknown) {
+    console.error("POST /api/properties error:", error); // ✅ Log the error
     return NextResponse.json(
       { error: "Failed to add property" },
       { status: 500 }

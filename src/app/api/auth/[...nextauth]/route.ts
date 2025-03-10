@@ -1,7 +1,8 @@
+import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import NextAuth, { NextAuthOptions } from "next-auth";
+import type { NextAuthOptions } from "next-auth";
 
-// Define authentication options
+// ✅ Define authentication options (DO NOT EXPORT THIS FROM THE ROUTE FILE)
 const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
@@ -11,17 +12,17 @@ const authOptions: NextAuthOptions = {
   ],
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: "/", // Redirect to home if user is not logged in
+    signIn: "/", // Redirect users to home if not logged in
   },
   callbacks: {
-    async redirect({ baseUrl }) {
-      return `${baseUrl}/map`; // Automatically redirect after login
+    async redirect({ url, baseUrl }) {
+      return url.startsWith(baseUrl) ? url : `${baseUrl}/map`; // Redirect only after login
     },
   },
 };
 
-// Create the NextAuth handler
+// ✅ Create NextAuth handler
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST }; // Correct API route export
-export { authOptions }; // Export for use in getServerSession()
+// ✅ Correct API route export
+export { handler as GET, handler as POST };

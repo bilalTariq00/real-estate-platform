@@ -1,11 +1,15 @@
-"use client";
+"use client"; // ✅ Ensure the component runs on the client
 
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
+import dynamic from "next/dynamic";
 import Loader from "./Loader";
 import PropertyMarker from "../helpers/PropertyMark";
 import ZoomToLocation from "../helpers/ZoomToLocation";
 import SearchBar from "../helpers/SearchBar";
+
+// ✅ Dynamically import Leaflet components
+const MapContainer = dynamic(() => import("react-leaflet").then((mod) => mod.MapContainer), { ssr: false });
+const TileLayer = dynamic(() => import("react-leaflet").then((mod) => mod.TileLayer), { ssr: false });
 
 interface Property {
   _id: string;
@@ -24,24 +28,21 @@ export default function MapComponent() {
 
   const defaultCenter: [number, number] = [30.3753, 69.3451]; // Pakistan center
 
-  // Fetch properties
-  const fetchProperties = async (search = "") => {
-    try {
-      setLoading(true);
-      const res = await fetch(`/api/properties?title=${search}`);
-      if (!res.ok) throw new Error("Failed to fetch properties");
-      const data: Property[] = await res.json();
-      setProperties(data);
-      setFilteredProperties(data);
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Initial fetch
   useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/properties`);
+        if (!res.ok) throw new Error("Failed to fetch properties");
+        const data: Property[] = await res.json();
+        setProperties(data);
+        setFilteredProperties(data);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchProperties();
   }, []);
 
@@ -51,7 +52,7 @@ export default function MapComponent() {
   return (
     <div className="w-full relative">
       {/* 🔍 Search Bar */}
-      <SearchBar properties={properties} fetchProperties={fetchProperties} setSelectedPosition={setSelectedPosition} />
+      <SearchBar properties={properties} fetchProperties={() => {}} setSelectedPosition={setSelectedPosition} />
 
       {/* 🗺️ Map Container */}
       <div className="relative z-0">

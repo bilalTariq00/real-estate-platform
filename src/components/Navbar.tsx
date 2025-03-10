@@ -11,28 +11,31 @@ export default function Navbar() {
   const [loading, setLoading] = useState(false);
 
   const handleSignIn = async () => {
-    setLoading(true);
-    try {
-      await signIn("google");
-      toast.success("Signed in successfully!");
-    } catch (error) {
-      toast.error("Sign in failed. Try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    await signIn("google");
+    toast.success("Signed in successfully!");
+  } catch (error) {
+    console.error("Sign-in error:", error); // ✅ Log the error
+    toast.error("Sign in failed. Try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const handleSignOut = async () => {
-    setLoading(true);
-    try {
-      await signOut();
-      toast.success("Signed out successfully.");
-    } catch (error) {
-      toast.error("Sign out failed.");
-    } finally {
-      setLoading(false);
-    }
-  };
+const handleSignOut = async () => {
+  setLoading(true);
+  try {
+    await signOut();
+    toast.success("Signed out successfully.");
+  } catch (error) {
+    console.error("Sign-out error:", error); // ✅ Log the error
+    toast.error("Sign out failed.");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <motion.nav
