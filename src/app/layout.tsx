@@ -22,9 +22,10 @@ export default function RootLayout({
       <body>
           <Navbar />
           <main>
+           <Toaster position="top-right" reverseOrder={false} />
             {children} 
           </main>
-          <Toaster />
+         
       </body>
       </Providers>
     </html>
