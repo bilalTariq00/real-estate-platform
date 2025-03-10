@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
+import { LatLngExpression } from "leaflet"; // ✅ Import correct type
 import Loader from "./Loader";
 import PropertyMarker from "../helpers/PropertyMark";
 import ZoomToLocation from "../helpers/ZoomToLocation";
@@ -19,14 +20,15 @@ interface Property {
   location: string;
 }
 
+// ✅ Correct `defaultCenter` type
+const defaultCenter: LatLngExpression = [30.3753, 69.3451]; // Pakistan center
+
 export default function MapComponent() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPosition, setSelectedPosition] = useState<[number, number] | null>(null);
-
-  const defaultCenter: [number, number] = [30.3753, 69.3451]; // Pakistan center
+  const [selectedPosition, setSelectedPosition] = useState<LatLngExpression | null>(null);
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -59,8 +61,8 @@ export default function MapComponent() {
         <MapContainer center={defaultCenter} zoom={6} className="h-[500px] w-full rounded-lg shadow-lg">
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-          {/* Zoom to selected location */}
-          {selectedPosition && <ZoomToLocation position={selectedPosition} />}
+          {/* ✅ Ensure selectedPosition has correct type */}
+          {selectedPosition && <ZoomToLocation position={selectedPosition as LatLngExpression} />}
 
           {/* Render Property Markers */}
           {filteredProperties.length > 0 ? (
