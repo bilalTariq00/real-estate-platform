@@ -1,21 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-
 export default function HomePage() {
-  const { status } = useSession();
-  const router = useRouter();
-
-  // Redirect logged-in users to "/map"
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.replace("/map");
-    }
-  }, [status, router]);
-
-  if (status === "loading") return <p className="text-center mt-10">Loading...</p>;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-purple-300 to-purple-800 text-white">
