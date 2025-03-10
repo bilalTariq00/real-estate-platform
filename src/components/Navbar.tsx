@@ -2,25 +2,28 @@
 
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import { Session } from "next-auth";
 
 export default function Navbar() {
+  const [isSigningIn, setIsSigningIn] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [prevSession, setPrevSession] = useState<Session | null>(null);
+
+  console.log({session, status})
+ const hasShownToast = useRef(false); // Track if the toast has been shown
 
   useEffect(() => {
-    if (status === "authenticated" && prevSession === null) {
-      toast.success("Signed in successfully! 🎉");
-    } else if (status === "unauthenticated" && prevSession) {
-      toast.success("Signed out successfully! 👋");
+    if (status === "authenticated" && session && !hasShownToast.current) {
+      toast.success(`Signed in as ${session.user?.email}`);
+      hasShownToast.current = true; // Prevent future duplicate toasts
     }
-    setPrevSession(session);
-  }, [status]);
+  }, [status, session]);
+ 
+    
 
   const handleSignIn = async () => {
     setLoading(true);

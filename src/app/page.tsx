@@ -3,9 +3,9 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import Loader from "@/components/Loader"; // ✅ Ensure this component exists
 
 export default function HomePage() {
+  
   const { status } = useSession();
   const router = useRouter();
 
@@ -14,10 +14,6 @@ export default function HomePage() {
       router.replace("/map"); // ✅ Redirect signed-in users to /map
     }
   }, [status, router]);
-
-  if (status === "loading") {
-    return <Loader />; // ✅ Show loader while checking authentication
-  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 text-center bg-gradient-to-r from-purple-300 to-purple-800">

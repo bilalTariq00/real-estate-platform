@@ -48,7 +48,6 @@ export default function MapComponent() {
     fetchProperties();
   }, []);
 
-  if (loading) return <Loader />;
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
