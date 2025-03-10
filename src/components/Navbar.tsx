@@ -2,7 +2,7 @@
 
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 
@@ -11,14 +11,20 @@ export default function Navbar() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+  // ✅ Show toast AFTER authentication state updates
+  useEffect(() => {
+    if (!loading) return;
+    if (status === "authenticated") toast.success("Signed in successfully!");
+    if (status === "unauthenticated") toast.success("Signed out successfully!");
+    setLoading(false); // Reset loading state after process completes
+  }, [status]);
+
   const handleSignIn = async () => {
     setLoading(true);
     try {
       await signIn("google");
-      toast.success("Signed in successfully!");
     } catch {
       toast.error("Sign in failed. Try again.");
-    } finally {
       setLoading(false);
     }
   };
@@ -27,11 +33,9 @@ export default function Navbar() {
     setLoading(true);
     try {
       await signOut();
-      router.replace("/"); // ✅ Redirect to home after sign-out
-      toast.success("Signed out successfully.");
+      router.replace("/"); // ✅ Redirect to home AFTER sign-out
     } catch {
       toast.error("Sign out failed.");
-    } finally {
       setLoading(false);
     }
   };
