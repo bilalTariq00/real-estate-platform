@@ -1,33 +1,28 @@
 "use client";
 
 import { useSession, signIn, signOut } from "next-auth/react";
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const pathname = usePathname();
   const [loading, setLoading] = useState(false);
-
-  // ✅ Show toast when user lands on specific pages
-  useEffect(() => {
-    if (pathname === "/map" && session) {
-      toast.success("Signed in successfully!"); // 🎉 When reaching /map, show sign-in toast
-    } else if (pathname === "/" && !session) {
-      toast.success("Signed out successfully!"); // ✅ When reaching /, show sign-out toast
-    }
-  }, [pathname, session]); // ✅ Depend on `pathname` and `session` state
 
   const handleSignIn = async () => {
     setLoading(true);
     try {
-      await signIn("google");
-      router.push("/map"); // ✅ Redirect user to /map after sign-in
+      const result = await signIn("google", { redirect: false }); // Prevent automatic redirection
+      if (result?.ok) {
+        toast.success("Signed in successfully!"); // ✅ Show toast on actual login success
+        router.push("/map");
+      } else {
+        toast.error("Sign in failed. Try again.");
+      }
     } catch {
-      toast.error("Sign in failed. Try again.");
+      toast.error("Sign in failed.");
     } finally {
       setLoading(false);
     }
@@ -36,8 +31,9 @@ export default function Navbar() {
   const handleSignOut = async () => {
     setLoading(true);
     try {
-      await signOut();
-      router.replace("/"); // ✅ Redirect user to / after sign-out
+      await signOut({ redirect: false }); // Prevent automatic redirection
+      toast.success("Signed out successfully!"); // ✅ Show toast on actual logout success
+      router.replace("/");
     } catch {
       toast.error("Sign out failed.");
     } finally {
