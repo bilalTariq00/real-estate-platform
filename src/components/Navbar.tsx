@@ -1,8 +1,8 @@
 "use client";
 
 import { useSession, signIn, signOut } from "next-auth/react";
+import { Session } from "next-auth"; // ✅ Import the Session type
 import { useRouter } from "next/navigation";
-import { Session } from "next-auth";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
@@ -11,23 +11,20 @@ export default function Navbar() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [prevSession, setPrevSession] = useState<Session | null | undefined>(
-    undefined
-  ); // ✅ Proper type definition
+  const [prevSession, setPrevSession] = useState<Session | null>(null); // ✅ Properly typed session tracking
 
+  // ✅ Show toast AFTER authentication state updates
   useEffect(() => {
-    if (prevSession === undefined) {
-      setPrevSession(session);
-      return;
-    }
+    if (prevSession === undefined) return; // Skip first render
 
     if (!prevSession && session) {
-      toast.success("Signed in successfully! 🎉");
+      toast.success("Signed in successfully!"); // 🎉 Trigger when user logs in
     } else if (prevSession && !session) {
-      toast.success("Signed out successfully! 👋");
+      toast.success("Signed out successfully!"); // ✅ Show toast when user logs out
     }
-    setPrevSession(session); // ✅ Ensure proper session state tracking
-  }, [session]);
+    
+    setPrevSession(session); // ✅ Update previous session state
+  }, [session]); // ✅ Depend on `session` to track changes
 
   const handleSignIn = async () => {
     setLoading(true);
@@ -43,8 +40,8 @@ export default function Navbar() {
   const handleSignOut = async () => {
     setLoading(true);
     try {
-      await signOut({ redirect: false }); // ✅ Prevents full page reload
-      router.replace("/"); // ✅ Redirect AFTER sign-out
+      await signOut();
+      router.replace("/"); // ✅ Redirect to home AFTER sign-out
     } catch {
       toast.error("Sign out failed.");
     } finally {
@@ -74,7 +71,6 @@ export default function Navbar() {
             whileTap={{ scale: 0.95 }}
             onClick={handleSignOut}
             className="bg-[#723B80] hover:bg-[#44257A] px-4 py-2 rounded-md transition text-sm md:text-base flex items-center justify-center gap-2"
-            disabled={loading}
           >
             {loading ? (
               <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
