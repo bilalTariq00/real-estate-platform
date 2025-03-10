@@ -2,8 +2,8 @@ import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import type { NextAuthOptions } from "next-auth";
 
-// ✅ Define authentication options (DO NOT EXPORT THIS FROM THE ROUTE FILE)
-const authOptions: NextAuthOptions = {
+// ✅ Define authentication options
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -12,11 +12,11 @@ const authOptions: NextAuthOptions = {
   ],
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: "/", // Redirect users to home if not logged in
+    signIn: "/", // Redirect to home if user is not logged in
   },
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      return url.startsWith(baseUrl) ? url : `${baseUrl}/map`; // Redirect only after login
+    async redirect({ baseUrl }) {
+      return `${baseUrl}/map`; // ✅ Always redirect to "/map" after sign-in
     },
   },
 };
