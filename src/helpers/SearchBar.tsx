@@ -92,7 +92,7 @@ export default function SearchBar({ properties, fetchProperties, setSelectedPosi
         value={searchTerm}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
-        className="border p-2 rounded w-72 shadow placeholder-gray-400 border-gray-300 hover:border-purple-400 focus:border-purple-600 transition"
+        className="border p-2 rounded w-72 shadow placeholder-black border-gray-300 hover:border-purple-400 focus:border-purple-600 transition"
       />
 
       {/* 🔽 Suggestions Dropdown */}

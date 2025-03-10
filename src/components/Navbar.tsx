@@ -1,7 +1,6 @@
 "use client";
 
 import { useSession, signIn, signOut } from "next-auth/react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -44,35 +43,34 @@ export default function Navbar() {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className="flex justify-between items-center px-6 py-4 bg-gradient-to-r from-[#A36DBF] to-[#44257A] text-white shadow-lg"
     >
-      <Link href="/" className="text-2xl font-bold tracking-wide">
+      {/* Logo */}
+      <h1 className="text-xl md:text-2xl font-bold tracking-wide">
         Real Estate Platform
-      </Link>
+      </h1>
 
+      {/* Authentication Buttons */}
       <div>
         {status === "loading" ? (
-          <span className="text-gray-300">Loading...</span>
+          <span className="text-gray-300 text-sm md:text-base">Loading...</span>
         ) : session ? (
-          <div className="flex items-center gap-4">
-            <span className="text-lg font-medium">{session.user?.name}</span>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleSignOut}
-              className="bg-[#723B80] hover:bg-[#44257A] px-5 py-2 rounded-md transition flex items-center justify-center gap-2"
-            >
-              {loading ? (
-                <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
-              ) : (
-                "Sign Out"
-              )}
-            </motion.button>
-          </div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleSignOut}
+            className="bg-[#723B80] hover:bg-[#44257A] px-4 py-2 rounded-md transition text-sm md:text-base flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+            ) : (
+              "Sign Out"
+            )}
+          </motion.button>
         ) : (
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleSignIn}
-            className="bg-[#723B80] hover:bg-[#44257A] px-5 py-2 rounded-md transition flex items-center justify-center gap-2"
+            className="bg-[#723B80] hover:bg-[#44257A] px-4 py-2 rounded-md transition text-sm md:text-base flex items-center justify-center gap-2"
             disabled={loading}
           >
             {loading ? (
