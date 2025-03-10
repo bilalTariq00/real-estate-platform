@@ -1,32 +1,28 @@
-"use client"; // ✅ Ensure this page only runs in the browser
+"use client";
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import dynamic from "next/dynamic";
-import Loader from "@/components/Loader"; // ✅ Ensure this is a simple client component
+import Loader from "@/components/Loader";
 
-// ✅ Dynamically import `MapComponent` to prevent SSR issues
-const MapComponent = dynamic(() => import("@/components/Map"), { 
-  ssr: false, 
-  loading: () => <Loader /> // ✅ Show Loader while loading Map
-});
+const MapComponent = dynamic(() => import("@/components/Map"), { ssr: false });
 
 export default function MapPage() {
-  const { status } = useSession();
+  const {  status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.replace("/"); // 🚀 Redirect if not logged in
+      router.replace("/"); // ✅ Redirect to home if not authenticated
     } else if (status === "authenticated") {
-      setLoading(false); // ✅ Ensure only authenticated users see the map
+      setLoading(false); // ✅ Show map only when authenticated
     }
   }, [status, router]);
 
   if (status === "loading" || loading) {
-    return <Loader />; // ✅ Show Loader while checking authentication
+    return <Loader />; // ✅ Show loader while checking auth status
   }
 
   return (

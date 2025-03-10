@@ -2,40 +2,40 @@
 
 import { useSession, signIn, signOut } from "next-auth/react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const handleSignIn = async () => {
-  setLoading(true);
-  try {
-    await signIn("google");
-    toast.success("Signed in successfully!");
-  } catch (error) {
-    console.error("Sign-in error:", error); // ✅ Log the error
-    toast.error("Sign in failed. Try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+    setLoading(true);
+    try {
+      await signIn("google");
+      toast.success("Signed in successfully!");
+    } catch {
+      toast.error("Sign in failed. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const handleSignOut = async () => {
-  setLoading(true);
-  try {
-    await signOut();
-    toast.success("Signed out successfully.");
-  } catch (error) {
-    console.error("Sign-out error:", error); // ✅ Log the error
-    toast.error("Sign out failed.");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  const handleSignOut = async () => {
+    setLoading(true);
+    try {
+      await signOut();
+      router.replace("/"); // ✅ Redirect to home after sign-out
+      toast.success("Signed out successfully.");
+    } catch {
+      toast.error("Sign out failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <motion.nav
@@ -44,12 +44,10 @@ const handleSignOut = async () => {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className="flex justify-between items-center px-6 py-4 bg-gradient-to-r from-[#A36DBF] to-[#44257A] text-white shadow-lg"
     >
-      {/* Logo */}
       <Link href="/" className="text-2xl font-bold tracking-wide">
         Real Estate Platform
       </Link>
 
-      {/* Authentication Buttons */}
       <div>
         {status === "loading" ? (
           <span className="text-gray-300">Loading...</span>
