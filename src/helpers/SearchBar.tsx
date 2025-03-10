@@ -17,20 +17,7 @@ export default function SearchBar({ properties, fetchProperties, setSelectedPosi
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState<Property[]>([]);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-
-  // Debounced Fetch for Performance Optimization
-  useEffect(() => {
-    const delayFetch = setTimeout(() => {
-      if (searchTerm) {
-        fetchSuggestions(searchTerm);
-      } else {
-        setSuggestions([]);
-        setDropdownOpen(false);
-      }
-    }, 300); // 300ms debounce to prevent excessive API calls
-
-    return () => clearTimeout(delayFetch);
-  }, [searchTerm]);
+  
 
   // Function to fetch property suggestions
   const fetchSuggestions = async (query: string) => {
@@ -62,6 +49,19 @@ export default function SearchBar({ properties, fetchProperties, setSelectedPosi
       console.error("Error fetching properties", error);
     }
   };
+
+  useEffect(() => {
+    const delayFetch = setTimeout(() => {
+      if (searchTerm) {
+        fetchSuggestions(searchTerm);
+      } else {
+        setSuggestions([]);
+        setDropdownOpen(false);
+      }
+    }, 300); // 300ms debounce to prevent excessive API calls
+
+    return () => clearTimeout(delayFetch);
+  }, [searchTerm,fetchSuggestions]);
 
   // Handle input change & update search term
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

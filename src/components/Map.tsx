@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { LatLngExpression } from "leaflet"; // ✅ Import correct type
-import Loader from "./Loader";
 import PropertyMarker from "../helpers/PropertyMark";
 import ZoomToLocation from "../helpers/ZoomToLocation";
 import SearchBar from "../helpers/SearchBar";
@@ -26,14 +25,12 @@ const defaultCenter: LatLngExpression = [30.3753, 69.3451]; // Pakistan center
 export default function MapComponent() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPosition, setSelectedPosition] = useState<LatLngExpression | null>(null);
 
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        setLoading(true);
         const res = await fetch(`/api/properties`);
         if (!res.ok) throw new Error("Failed to fetch properties");
         const data: Property[] = await res.json();
@@ -41,8 +38,6 @@ export default function MapComponent() {
         setFilteredProperties(data);
       } catch (err) {
         setError((err as Error).message);
-      } finally {
-        setLoading(false);
       }
     };
     fetchProperties();

@@ -5,15 +5,14 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
-import { Session } from "next-auth";
 
 export default function Navbar() {
-  const [isSigningIn, setIsSigningIn] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   console.log({session, status})
+  
  const hasShownToast = useRef(false); // Track if the toast has been shown
 
   useEffect(() => {
