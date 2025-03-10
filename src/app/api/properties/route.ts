@@ -29,26 +29,41 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     await connectToDatabase();
-    const { title, latitude, longitude } = await req.json();
+    const { places } = await req.json();
 
-    if (!title || !latitude || !longitude) {
+    if (!Array.isArray(places) || places.length === 0) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: "Invalid or empty places array" },
         { status: 400 }
       );
     }
 
-    const newProperty = new Property({ title, latitude, longitude });
-    await newProperty.save();
+    // Validate all properties
+    const validPlaces = places.filter(
+      (p) => p.title && p.latitude && p.longitude
+    );
+
+    if (validPlaces.length === 0) {
+      return NextResponse.json(
+        { error: "No valid properties to add" },
+        { status: 400 }
+      );
+    }
+
+    // Insert multiple properties at once
+    const addedProperties = await Property.insertMany(validPlaces);
 
     return NextResponse.json(
-      { message: "Property added successfully", property: newProperty },
+      {
+        message: `${addedProperties.length} properties added successfully`,
+        properties: addedProperties,
+      },
       { status: 201 }
     );
   } catch (error: unknown) {
-    console.error("POST /api/properties error:", error); // ✅ Log the error
+    console.error("POST /api/properties error:", error);
     return NextResponse.json(
-      { error: "Failed to add property" },
+      { error: "Failed to add properties" },
       { status: 500 }
     );
   }

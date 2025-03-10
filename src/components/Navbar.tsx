@@ -2,41 +2,41 @@
 
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
+import { Session } from "next-auth";
 
 export default function Navbar() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [prevSession, setPrevSession] = useState<Session | null>(null);
+
+  useEffect(() => {
+    if (status === "authenticated" && prevSession === null) {
+      toast.success("Signed in successfully! 🎉");
+    } else if (status === "unauthenticated" && prevSession) {
+      toast.success("Signed out successfully! 👋");
+    }
+    setPrevSession(session);
+  }, [status]);
 
   const handleSignIn = async () => {
-  setLoading(true);
-  try {
-    const result = await signIn("google", { redirect: false });
-    
-    console.log("SignIn Result:", result); // 🛠 Debugging
-
-    if (result?.error) {
-      throw new Error(result.error);
+    setLoading(true);
+    try {
+      await signIn("google");
+    } catch {
+      toast.error("Sign in failed. Try again.");
+    } finally {
+      setLoading(false);
     }
-
-    toast.success("Signed in successfully!");
-    router.push("/map");
-  } catch (error) {
-    console.error("Sign in error:", error); // 🛠 Log error
-    toast.error("Sign in failed. Try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const handleSignOut = async () => {
     setLoading(true);
     try {
-      await signOut({ redirect: false }); // Prevent automatic redirection
-      toast.success("Signed out successfully!"); // ✅ Show toast on actual logout success
+      await signOut({ redirect: false });
       router.replace("/");
     } catch {
       toast.error("Sign out failed.");
@@ -52,12 +52,10 @@ export default function Navbar() {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className="flex justify-between items-center px-6 py-4 bg-gradient-to-r from-[#A36DBF] to-[#44257A] text-white shadow-lg"
     >
-      {/* Logo */}
       <h1 className="text-xl md:text-2xl font-bold tracking-wide">
         Real Estate Platform
       </h1>
 
-      {/* Authentication Buttons */}
       <div>
         {status === "loading" ? (
           <span className="text-gray-300 text-sm md:text-base">Loading...</span>
@@ -67,6 +65,7 @@ export default function Navbar() {
             whileTap={{ scale: 0.95 }}
             onClick={handleSignOut}
             className="bg-[#723B80] hover:bg-[#44257A] px-4 py-2 rounded-md transition text-sm md:text-base flex items-center justify-center gap-2"
+            disabled={loading}
           >
             {loading ? (
               <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
