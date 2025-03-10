@@ -97,7 +97,7 @@ export default function SearchBar({ properties, fetchProperties, setSelectedPosi
 
       {/* 🔽 Suggestions Dropdown */}
       {isDropdownOpen && suggestions.length > 0 && (
-        <ul className="absolute top-full mt-1 w-72 bg-white border rounded shadow-lg z-50 max-h-60 overflow-y-auto">
+        <ul className="absolute top-full mt-1 w-72 bg-white border rounded shadow-lg z-50 max-h-60 overflow-y-auto text-black">
           {suggestions.map((property) => (
             <li
               key={property._id}
