@@ -2,7 +2,7 @@
 
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 
@@ -10,14 +10,19 @@ export default function Navbar() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [prevSession, setPrevSession] = useState(session); // Track previous session state
 
   // ✅ Show toast AFTER authentication state updates
   useEffect(() => {
-    if (!loading) return;
-    if (status === "authenticated") toast.success("Signed in successfully!");
-    if (status === "unauthenticated") toast.success("Signed out successfully!");
-    setLoading(false); // Reset loading state after process completes
-  }, [status]);
+    if (prevSession !== session) {
+      if (session) {
+        toast.success("Signed in successfully!"); // 🎉 Trigger only when session exists
+      } else if (prevSession && !session) {
+        toast.success("Signed out successfully!"); // ✅ Show toast when user logs out
+      }
+      setPrevSession(session);
+    }
+  }, [session, prevSession]); // ✅ Depend on `session`
 
   const handleSignIn = async () => {
     setLoading(true);
@@ -25,6 +30,7 @@ export default function Navbar() {
       await signIn("google");
     } catch {
       toast.error("Sign in failed. Try again.");
+    } finally {
       setLoading(false);
     }
   };
@@ -36,6 +42,7 @@ export default function Navbar() {
       router.replace("/"); // ✅ Redirect to home AFTER sign-out
     } catch {
       toast.error("Sign out failed.");
+    } finally {
       setLoading(false);
     }
   };
