@@ -2,27 +2,28 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect } from "react";
 import dynamic from "next/dynamic";
 import Loader from "@/components/Loader";
 
 const MapComponent = dynamic(() => import("@/components/Map"), { ssr: false });
 
 export default function MapPage() {
-  const {  status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.replace("/"); // ✅ Redirect to home if not authenticated
-    } else if (status === "authenticated") {
-      setLoading(false); // ✅ Show map only when authenticated
+      router.replace("/"); 
     }
   }, [status, router]);
 
-  if (status === "loading" || loading) {
-    return <Loader />; // ✅ Show loader while checking auth status
+  if (status === "loading") {
+    return <Loader />; 
+  }
+
+  if (status === "unauthenticated") {
+    return null; 
   }
 
   return (
@@ -30,9 +31,7 @@ export default function MapPage() {
       <h1 className="text-3xl font-bold mb-4 text-purple-100">Real Estate Map</h1>
       <p className="text-lg text-white">Explore available properties on the map.</p>
       <div className="w-full h-[500px] mt-6">
-        <Suspense fallback={<Loader />}>
-          <MapComponent />
-        </Suspense>
+        <MapComponent />
       </div>
     </div>
   );

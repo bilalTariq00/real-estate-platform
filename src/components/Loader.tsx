@@ -1,7 +1,5 @@
 "use client";
 import dynamic from "next/dynamic";
-
-// ✅ Dynamically import Lottie to avoid SSR issues
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 import { motion } from "framer-motion";
@@ -19,7 +17,6 @@ export default function Loader() {
         }}
         className="flex flex-col items-center"
       >
-        {/* Replace with your own finger image or SVG */}
         <Lottie animationData={handTapping} loop={true} style={{ width: 200 }} />
       </motion.div>
     </div>

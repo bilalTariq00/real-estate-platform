@@ -11,9 +11,7 @@ export default function Navbar() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  console.log({session, status})
-  
- const hasShownToast = useRef(false); // Track if the toast has been shown
+ const hasShownToast = useRef(false);
 
   useEffect(() => {
     if (status === "authenticated" && session && !hasShownToast.current) {

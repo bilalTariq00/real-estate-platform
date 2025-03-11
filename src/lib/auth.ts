@@ -14,7 +14,7 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async redirect() {
-      return "/map"; // ✅ Always redirect to /map after login
+      return "/map"; // Always redirect to /map after login
     },
   },
 };

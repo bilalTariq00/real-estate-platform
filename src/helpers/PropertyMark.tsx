@@ -6,10 +6,8 @@ interface Property {
   title: string;
   latitude: number;
   longitude: number;
-  location: string;
 }
 
-// Custom Marker Icon
 const customIcon = new L.Icon({
   iconUrl: "/marker-icon.png",
   iconSize: [25, 41],
@@ -23,7 +21,6 @@ export default function PropertyMarker({ property }: { property: Property }) {
     <Marker position={[property.latitude, property.longitude]} icon={customIcon}>
       <Popup>
         <h2 className="text-lg font-semibold">{property.title}</h2>
-        <p className="text-sm"> {property.location}</p>
         <p className="text-sm">🌍 Latitude: {property.latitude}</p>
         <p className="text-sm">🌍 Longitude: {property.longitude}</p>
       </Popup>

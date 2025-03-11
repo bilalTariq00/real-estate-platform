@@ -1,13 +1,12 @@
-"use client"; // ✅ Ensure the component runs on the client
+"use client";
 
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { LatLngExpression } from "leaflet"; // ✅ Import correct type
+import { LatLngExpression } from "leaflet";
 import PropertyMarker from "../helpers/PropertyMark";
 import ZoomToLocation from "../helpers/ZoomToLocation";
 import SearchBar from "../helpers/SearchBar";
 
-// ✅ Dynamically import Leaflet components
 const MapContainer = dynamic(() => import("react-leaflet").then((mod) => mod.MapContainer), { ssr: false });
 const TileLayer = dynamic(() => import("react-leaflet").then((mod) => mod.TileLayer), { ssr: false });
 
@@ -16,10 +15,8 @@ interface Property {
   title: string;
   latitude: number;
   longitude: number;
-  location: string;
 }
 
-// ✅ Correct `defaultCenter` type
 const defaultCenter: LatLngExpression = [30.3753, 69.3451]; // Pakistan center
 
 export default function MapComponent() {
@@ -47,18 +44,15 @@ export default function MapComponent() {
 
   return (
     <div className="w-full relative">
-      {/* 🔍 Search Bar */}
+
       <SearchBar properties={properties} fetchProperties={() => {}} setSelectedPosition={setSelectedPosition} />
 
-      {/* 🗺️ Map Container */}
       <div className="relative z-0">
         <MapContainer center={defaultCenter} zoom={6} className="h-[500px] w-full rounded-lg shadow-lg">
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-          {/* ✅ Ensure selectedPosition has correct type */}
           {selectedPosition && <ZoomToLocation position={selectedPosition as LatLngExpression} />}
 
-          {/* Render Property Markers */}
           {filteredProperties.length > 0 ? (
             filteredProperties.map((property) => (
               <PropertyMarker key={property._id} property={property} />

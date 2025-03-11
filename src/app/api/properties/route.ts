@@ -6,7 +6,6 @@ export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
 
-    // Get search query from request URL
     const { searchParams } = new URL(req.url);
     const searchTitle = searchParams.get("title") || "";
 
@@ -18,7 +17,7 @@ export async function GET(req: NextRequest) {
     const properties = await Property.find(query);
     return NextResponse.json(properties, { status: 200 });
   } catch (error: unknown) {
-    console.error("GET /api/properties error:", error); // ✅ Log the error
+    console.error("GET /api/properties error:", error);
     return NextResponse.json(
       { error: "Failed to fetch properties" },
       { status: 500 }
@@ -38,7 +37,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validate all properties
     const validPlaces = places.filter(
       (p) => p.title && p.latitude && p.longitude
     );
@@ -50,7 +48,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Insert multiple properties at once
     const addedProperties = await Property.insertMany(validPlaces);
 
     return NextResponse.json(
